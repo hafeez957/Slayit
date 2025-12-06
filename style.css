@@ -6,3 +6,29 @@
 .navbar-brand:hover{
     color:rgb(127, 127, 212);
 }
+
+.carousel img{
+    height: 90vh;
+}
+.carousel{
+    height: 90vh;
+}
+
+.bg-electronics{
+    background:linear-gradient(rgba(0, 0, 0, 0.3),rgba(0,0,0,0.3)), url(./Assets/images/electronics.jpg) no-repeat center/cover;
+    align-content: center;
+    text-align: center;
+    margin-top: 2rem;
+    h1{
+            font-size: 5rem;
+            text-transform: uppercase;
+    }
+         
+}
+
+.card{
+    height: 50vh;
+}
+.card img{
+    height: 56%;
+}
