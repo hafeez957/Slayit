@@ -6,7 +6,7 @@ console.log(electronicsProducts);
 
 
 
-productsMain.innerHTML = "<h1>Loading...</h1>";
+productsMain.innerHTML = `<div class="loader"></div>`;
 
 (async () => {
     let api_data = await (await fetch("https://fakestoreapi.com/products")).json()
@@ -34,6 +34,7 @@ productsMain.innerHTML = "<h1>Loading...</h1>";
     productsMain.innerHTML = output;
     categories.forEach(option => {
         option.onclick = (e) => {
+            // e.preventdefault();
             let selected_category = e.target.innerText.toLowerCase();
             let filtered_output = "";
             for (const product of api_data) {
@@ -52,7 +53,6 @@ productsMain.innerHTML = "<h1>Loading...</h1>";
                                 </div>
         
                              `
-
                             }
                         }
                         productsMain.innerHTML = filtered_output;
