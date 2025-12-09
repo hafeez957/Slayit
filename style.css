@@ -8,10 +8,11 @@
 }
 
 .carousel img{
-    height: 90vh;
+    height: 95vh;
+    margin-bottom: 10px;
 }
 .carousel{
-    height: 90vh;
+    height: 95vh;
 }
 
 .bg-electronics{
