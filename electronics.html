@@ -43,9 +43,9 @@
                             <li><a class="dropdown-item" href="./jewellary.html">Jewelery</a></li>
                         </ul>
                     </li>
-                    <!-- <li class="nav-item">
-          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="./cart.html">Cart</a>
+                    </li>
                 </ul>
                 <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search Product" aria-label="Search" />
@@ -78,7 +78,7 @@
                 if( category==product.category) {
                     console.log(product);
                     filtered_output += `
-                                <div class="card col-3">
+                                <div class="card col-3" data-product-id="${product.id}">
                                         <img src="${product.image}" alt="${product.title} class="card-img-top" alt="...">
                                         <div class="card-body">
                                             <p class="card-title">${product.title}</p>
@@ -92,9 +92,21 @@
                             }
                         }
                         productsMain.innerHTML = filtered_output;
+
+                        // Navigate to product details on card click
+                        productsMain.addEventListener("click", (e) => {
+                            if (e.target.classList.contains('btn') || e.target.closest('.btn')) {
+                                return;
+                            }
+                            const card = e.target.closest('[data-product-id]');
+                            if (card) {
+                                const productId = card.getAttribute('data-product-id');
+                                window.location.href = `product-detail.html?id=${productId}`;
+                            }
+                        });
         // }
     // })
-})()
+})();
 
 
 </script>
