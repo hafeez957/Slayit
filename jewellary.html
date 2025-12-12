@@ -83,7 +83,7 @@
                                         <div class="card-body">
                                             <p class="card-title">${product.title}</p>
                                             <p class="card-title">$${product.price}</p>
-                                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                                            <a href="#" class="btn btn-primary" onclick="addToCart(${product.id}); event.stopPropagation();">Add to Cart</a>
                                         </div>
                                     </div>
                                 </div>

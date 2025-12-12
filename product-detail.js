@@ -66,28 +66,25 @@ async function loadProductDetails() {
 
         // Add to cart functionality
         addToCartBtn.onclick = () => {
-            // Check if product already exists in cart
-            if (!cart.some(item => item.id === product.id)) {
-                cart.push(product);
-                localStorage.setItem('cart', JSON.stringify(cart));
+            const existing = cart.find(item => item.id === product.id);
+            if (existing) {
+                existing.quantity = (existing.quantity || 1) + 1;
+                addToCartBtn.textContent = 'Quantity Increased';
+                addToCartBtn.classList.remove('btn-primary');
+                addToCartBtn.classList.add('btn-success');
+            } else {
+                cart.push({ ...product, quantity: 1 });
                 addToCartBtn.textContent = 'Added to Cart!';
                 addToCartBtn.classList.remove('btn-primary');
                 addToCartBtn.classList.add('btn-success');
-                setTimeout(() => {
-                    addToCartBtn.textContent = 'Add to Cart';
-                    addToCartBtn.classList.remove('btn-success');
-                    addToCartBtn.classList.add('btn-primary');
-                }, 2000);
-            } else {
-                addToCartBtn.textContent = 'Already in Cart';
-                addToCartBtn.classList.remove('btn-primary');
-                addToCartBtn.classList.add('btn-warning');
-                setTimeout(() => {
-                    addToCartBtn.textContent = 'Add to Cart';
-                    addToCartBtn.classList.remove('btn-warning');
-                    addToCartBtn.classList.add('btn-primary');
-                }, 2000);
             }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            setTimeout(() => {
+                addToCartBtn.textContent = 'Add to Cart';
+                addToCartBtn.classList.remove('btn-success');
+                addToCartBtn.classList.remove('btn-warning');
+                addToCartBtn.classList.add('btn-primary');
+            }, 2000);
         };
 
         // Hide loader and show product details

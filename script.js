@@ -60,16 +60,14 @@ productsMain.innerHTML = `<div class="loader"></div>`;
             let filtered_output = "";
             for (const product of api_data) {
                 let { category } = product;
-                // console.log(category);
                 if (selected_category == category) {
-                    console.log(product);
                     filtered_output += `
                                 <div class="card col-3" data-product-id="${product.id}">
                                         <img src="${product.image}" alt="${product.title} class="card-img-top" alt="...">
                                         <div class="card-body">
                                             <p class="card-title">${product.title}</p>
                                              <p class="card-title">$${product.price}</p>
-                                            <a href="#" class="btn btn-primary" onclick="addToCart(${product.id})">Add to Cart</a>
+                                            <a href="#" class="btn btn-primary" onclick="addToCart(${product.id}); event.stopPropagation();">Add to Cart</a>
                                         </div>
                                     </div>
                                 </div>
@@ -90,7 +88,7 @@ productsMain.innerHTML = `<div class="loader"></div>`;
         let searchProduct = e.target.search.value;
         let searchFilter = "";
         for (const product of api_data) {
-            let { title, image, price } = product;
+            let { id, title, image, price } = product;
             if (title.toLowerCase().includes(searchProduct.toLowerCase().trim())) {
                 searchFilter += `
                                 <div class="card col-3" data-product-id="${id}">
@@ -98,7 +96,7 @@ productsMain.innerHTML = `<div class="loader"></div>`;
                                         <div class="card-body">
                                             <p class="card-title">${title}</p>
                                             <p class="card-title">$${price}</p>
-                                            <a href="#" class="btn btn-primary" onclick="addToCart(${id})">Add to Cart</a>
+                                            <a href="#" class="btn btn-primary" onclick="addToCart(${id}); event.stopPropagation();">Add to Cart</a>
                                         </div>
                                     </div>
                                 </div>
@@ -109,21 +107,26 @@ productsMain.innerHTML = `<div class="loader"></div>`;
     })
 })()
 
-// Load cart from localStorage or initialize empty array
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
 async function addToCart(id) {
-    let api_data = await (await fetch("https://fakestoreapi.com/products")).json()
+    const api_data = await (await fetch("https://fakestoreapi.com/products")).json();
     for (const product of api_data) {
-        if (product.id == id) {
-            // Check if product with this id already exists in cart
-            if(!cart.some(item => item.id === id)){
-                cart.push(product);
-                localStorage.setItem('cart', JSON.stringify(cart));
-                console.log('Product added to cart:', product.title);
+        if (product.id === id) {
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.quantity = (existing.quantity || 1) + 1;
+                console.log('Increased quantity for:', existing.title);
             } else {
-                console.log('Product already in cart');
+                cart.push({ ...product, quantity: 1 });
+                console.log('Product added to cart:', product.title);
             }
+            saveCart();
+            break;
         }
     }
     console.log(cart);    
