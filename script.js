@@ -1,12 +1,91 @@
+// Only run products page code if the products-main element exists
 const productsMain = document.querySelector('.products-main');
 const categories = document.querySelectorAll('.product-categories a');
 const electronicsProducts = document.querySelector('.electronics-products');
 
-console.log(electronicsProducts);
+// Cart and addToCart function - available on all pages
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-productsMain.innerHTML = `<div class="loader"></div>`;
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
 
-(async () => {
+// Toast notification function
+function showToast(message, type = 'success') {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+        toastContainer.style.zIndex = '9999';
+        document.body.appendChild(toastContainer);
+    }
+
+    // Create toast element
+    const toastId = 'toast-' + Date.now();
+    const bgColor = type === 'success' ? 'bg-success' : type === 'info' ? 'bg-info' : 'bg-warning';
+    const icon = type === 'success' ? '✓' : type === 'info' ? 'ℹ' : '⚠';
+    
+    const toastHTML = `
+        <div id="${toastId}" class="toast ${bgColor} text-white" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header ${bgColor} text-white border-0">
+                <strong class="me-auto">${icon} ${type === 'success' ? 'Success' : type === 'info' ? 'Info' : 'Warning'}</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+    
+    // Initialize and show toast
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, {
+        autohide: true,
+        delay: 3000
+    });
+    toast.show();
+    
+    // Remove toast element after it's hidden
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+
+async function addToCart(id) {
+    try {
+        const api_data = await (await fetch("https://fakestoreapi.com/products")).json();
+        for (const product of api_data) {
+            if (product.id === id) {
+                const existing = cart.find(item => item.id === id);
+                if (existing) {
+                    existing.quantity = (existing.quantity || 1) + 1;
+                    showToast(`${existing.title} quantity increased to ${existing.quantity}`, 'success');
+                    console.log('Increased quantity for:', existing.title);
+                } else {
+                    cart.push({ ...product, quantity: 1 });
+                    showToast(`${product.title} added to cart!`, 'success');
+                    console.log('Product added to cart:', product.title);
+                }
+                saveCart();
+                break;
+            }
+        }
+        console.log(cart);
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        showToast('Failed to add product to cart. Please try again.', 'warning');
+    }
+}
+
+// Only initialize products page if productsMain exists
+if (productsMain) {
+    productsMain.innerHTML = `<div class="loader"></div>`;
+
+    (async () => {
     let api_data = await (await fetch("https://fakestoreapi.com/products")).json()
     console.log(api_data);
     
@@ -105,31 +184,7 @@ productsMain.innerHTML = `<div class="loader"></div>`;
         }
         productsMain.innerHTML = searchFilter || "<h3>No Product found";
     })
-})()
-
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
-
-async function addToCart(id) {
-    const api_data = await (await fetch("https://fakestoreapi.com/products")).json();
-    for (const product of api_data) {
-        if (product.id === id) {
-            const existing = cart.find(item => item.id === id);
-            if (existing) {
-                existing.quantity = (existing.quantity || 1) + 1;
-                console.log('Increased quantity for:', existing.title);
-            } else {
-                cart.push({ ...product, quantity: 1 });
-                console.log('Product added to cart:', product.title);
-            }
-            saveCart();
-            break;
-        }
-    }
-    console.log(cart);    
+    })();
 }
 
 
