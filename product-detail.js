@@ -69,11 +69,17 @@ async function loadProductDetails() {
             const existing = cart.find(item => item.id === product.id);
             if (existing) {
                 existing.quantity = (existing.quantity || 1) + 1;
+                if (typeof showToast === 'function') {
+                    showToast(`${product.title} quantity increased to ${existing.quantity}`, 'success');
+                }
                 addToCartBtn.textContent = 'Quantity Increased';
                 addToCartBtn.classList.remove('btn-primary');
                 addToCartBtn.classList.add('btn-success');
             } else {
                 cart.push({ ...product, quantity: 1 });
+                if (typeof showToast === 'function') {
+                    showToast(`${product.title} added to cart!`, 'success');
+                }
                 addToCartBtn.textContent = 'Added to Cart!';
                 addToCartBtn.classList.remove('btn-primary');
                 addToCartBtn.classList.add('btn-success');
